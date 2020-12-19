@@ -32,7 +32,7 @@ public struct Route<Content: View>: View {
 
     public var body: some View {
         // Try to avoid calling `execute` if the Switch is already resolved.
-        var parameters: [String : String]?
+        var parameters: [String : Any]?
         var matches = path.isEmpty
             
         if (!matches && switchEnvironment.isActive && !switchEnvironment.isResolved)
@@ -68,7 +68,7 @@ public final class RouteData: ObservableObject {
     public let parameters: PathParameters<String>
     public let path: String
     
-    init(match: String = "", path: String = "", parameters: [String : String] = [:]) {
+    init(match: String = "", path: String = "", parameters: [String : Any] = [:]) {
         self.match = match
         self.parameters = PathParameters(parameters)
         self.path = path
@@ -79,13 +79,13 @@ public final class RouteData: ObservableObject {
 /// Dynamic lookup wrapper around a Dictionary.
 @dynamicMemberLookup
 public class PathParameters<Value> {
-    private let data: [String : Value]
+    private let data: [String : Any]
     
-    init(_ data: [String : Value]) {
+    init(_ data: [String : Any]) {
         self.data = data
     }
     
-    public subscript(dynamicMember member: String) -> Value? {
-        return data[member]
+    public subscript<T>(dynamicMember member: String) -> T? {
+        return data[member] as? T
     }
 }
